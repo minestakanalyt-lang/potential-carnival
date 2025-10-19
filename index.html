@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Usługi Discord i Minecraft</title>
+<style>
+/* --- Reset i ogólny styl --- */
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    background-color: #121212;
+    color: #f0f0f0;
+}
+header {
+    background: linear-gradient(90deg, #1abc9c, #16a085);
+    padding: 40px 20px;
+    text-align: center;
+}
+header h1 { margin:0; font-size: 2.8em; }
+header p { margin-top: 10px; font-size:1.3em; color:#ecf0f1; }
+
+/* --- Kontener --- */
+.container {
+    max-width: 1000px;
+    margin: auto;
+    padding: 30px 20px;
+}
+
+/* --- Karty usług --- */
+.services {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+    justify-content: center;
+}
+.service-card {
+    background-color: #1f1f1f;
+    border-radius: 15px;
+    width: 250px;
+    padding: 20px;
+    text-align: center;
+    cursor: pointer;
+    transition: 0.3s;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.5);
+}
+.service-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 6px 15px rgba(0,0,0,0.6);
+}
+.service-card img {
+    width: 80px;
+    height: 80px;
+    margin-bottom: 15px;
+}
+.service-card h3 { margin: 10px 0; color: #1abc9c; }
+.service-card p { margin:0; font-size:1.1em; }
+
+/* --- Modal --- */
+.modal {
+    display: none;
+    position: fixed;
+    z-index: 999;
+    left:0; top:0;
+    width:100%; height:100%;
+    background-color: rgba(0,0,0,0.85);
+    justify-content: center;
+    align-items: center;
+}
+.modal-content {
+    background-color: #1f1f1f;
+    padding: 30px;
+    border-radius: 15px;
+    width: 90%;
+    max-width: 500px;
+    text-align: center;
+    position: relative;
+    animation: fadeIn 0.5s ease forwards;
+}
+.modal-content h2 { color:#1abc9c; margin-bottom:10px; }
+.modal-content img { width:100px; height:100px; margin-bottom:15px; }
+.modal-content p { margin-bottom: 20px; }
+input[type="text"], select {
+    width: 100%;
+    padding: 12px;
+    margin-bottom: 15px;
+    border-radius: 8px;
+    border: none;
+    font-size: 16px;
+}
+button {
+    width: 100%;
+    padding: 15px;
+    font-size: 18px;
+    border: none;
+    border-radius: 8px;
+    background-color: #f39c12;
+    color: #fff;
+    cursor: pointer;
+    transition: 0.3s;
+}
+button:hover { background-color: #e67e22; }
+.close-btn {
+    position: absolute;
+    top: 15px; right: 15px;
+    font-size: 25px;
+    color: #fff;
+    cursor: pointer;
+}
+label { display: block; margin-bottom: 5px; text-align: left; }
+.checkbox-container { text-align: left; margin-bottom: 20px; }
+#thankYouMessage {
+    background-color: #27ae60;
+    color: #fff;
+    padding: 20px;
+    border-radius: 15px;
+    text-align: center;
+    font-size: 1.5em;
+    display: none;
+    margin-top: 20px;
+}
+
+@keyframes fadeIn {
+    from { opacity:0; transform: translateY(-20px); }
+    to { opacity:1; transform: translateY(0); }
+}
+
+/* --- Responsywność --- */
+@media(max-width:600px){
+    .services { flex-direction: column; align-items: center; }
+    .service-card { width:80%; }
+}
+</style>
+</head>
+<body>
+
+<header>
+<h1>💎 Zamów usługę</h1>
+<p>Profesjonalne rozwiązania dla Discord i Minecraft!</p>
+</header>
+
+<div class="container">
+<div class="services">
+    <div class="service-card" onclick="openModal('Bot Discord', 6, 'https://cdn-icons-png.flaticon.com/512/906/906361.png')">
+        <img src="https://cdn-icons-png.flaticon.com/512/906/906361.png" alt="Bot Discord">
+        <h3>🤖 Bot Discord</h3>
+        <p>Cena: 6 zł</p>
+    </div>
+    <div class="service-card" onclick="openModal('Serwer Minecraft Basic', 10, 'https://cdn-icons-png.flaticon.com/512/232/232368.png')">
+        <img src="https://cdn-icons-png.flaticon.com/512/232/232368.png" alt="Minecraft Basic">
+        <h3>🟦 Serwer Minecraft Basic</h3>
+        <p>Cena: 10 zł</p>
+    </div>
+    <div class="service-card" onclick="openModal('Serwer Minecraft Premium', 30, 'https://cdn-icons-png.flaticon.com/512/230/230322.png')">
+        <img src="https://cdn-icons-png.flaticon.com/512/230/230322.png" alt="Minecraft Premium">
+        <h3>🟨 Serwer Minecraft Premium</h3>
+        <p>Cena: 30 zł</p>
+    </div>
+</div>
+
+<div id="thankYouMessage">🎉 Dziękujemy za zakup! 🎉</div>
+</div>
+
+<!-- Modal -->
+<div class="modal" id="purchaseModal">
+    <div class="modal-content">
+        <span class="close-btn" onclick="closeModal()">&times;</span>
+        <h2 id="modalTitle">Tytuł usługi</h2>
+        <img id="modalImage" src="" alt="Ikona usługi">
+        <p id="modalDesc">Opis usługi</p>
+
+        <label>Twój nick Discord:</label>
+        <input type="text" id="discordName" placeholder="Wpisz swój nick Discord">
+
+        <label>Kod promocyjny (opcjonalnie):</label>
+        <input type="text" id="promoCode" placeholder="Wpisz kod rabatowy">
+
+        <div class="checkbox-container">
+            <input type="checkbox" id="acceptRules">
+            <label for="acceptRules">Akceptuję regulamin</label>
+        </div>
+
+        <label>Metoda płatności:</label>
+        <select id="paymentMethod">
+            <option value="paypal">PayPal</option>
+        </select>
+
+        <button onclick="buyService()">Kup teraz</button>
+    </div>
+</div>
+
+<script>
+let currentService = '';
+let currentPrice = 0;
+
+function openModal(serviceName, price, imageURL) {
+    currentService = serviceName;
+    currentPrice = price;
+    document.getElementById('modalTitle').innerText = serviceName;
+    document.getElementById('modalImage').src = imageURL;
+    document.getElementById('modalDesc').innerText = `Cena: ${price} zł. Wypełnij dane aby kontynuować zakup.`;
+    document.getElementById('discordName').value = '';
+    document.getElementById('promoCode').value = '';
+    document.getElementById('acceptRules').checked = false;
+    document.getElementById('paymentMethod').value = 'paypal';
+    document.getElementById('purchaseModal').style.display = 'flex';
+    document.getElementById('thankYouMessage').style.display = 'none';
+}
+
+function closeModal() {
+    document.getElementById('purchaseModal').style.display = 'none';
+}
+
+function buyService() {
+    const nick = document.getElementById('discordName').value.trim();
+    const promo = document.getElementById('promoCode').value.trim().toUpperCase();
+    const payment = document.getElementById('paymentMethod').value;
+    const accepted = document.getElementById('acceptRules').checked;
+
+    if (!nick) { alert("Podaj swój nick Discord!"); return; }
+    if (!accepted) { alert("Musisz zaakceptować regulamin!"); return; }
+
+    let finalPrice = currentPrice;
+    let itemName = currentService;
+
+    if (promo === "PROMO10") { finalPrice -= 10; if(finalPrice<0) finalPrice=0; itemName += " (PROMO10)"; }
+
+    if(payment === "paypal") {
+        const businessEmail = "TWÓJ_PAYPAL_EMAIL";
+        const url = `https://www.paypal.com/cgi-bin/webscr?cmd=_xclick&business=${encodeURIComponent(businessEmail)}&item_name=${encodeURIComponent(itemName + " (" + nick + ")")}&amount=${finalPrice}&currency_code=PLN`;
+        window.open(url, "_blank");
+    }
+
+    closeModal();
+    document.getElementById('thankYouMessage').style.display = 'block';
+}
+</script>
+
+</body>
+</html>
